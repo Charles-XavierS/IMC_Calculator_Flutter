@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:imc_flutter/pages/calculator_page.dart';
 
 class HomePage extends StatefulWidget {
   final String name;
@@ -11,6 +11,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  PageController pageController = PageController(initialPage: 0);
+  int pagePosition = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,81 +32,19 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: double.infinity,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-                child: TextField(
-                  keyboardType:
-                      TextInputType.number, // Define o teclado numérico
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter
-                        .digitsOnly, // Permite apenas dígitos (números)
-                  ],
-                  style:
-                      const TextStyle(color: Colors.deepPurple, fontSize: 30),
-                  decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(vertical: 10),
-                      enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.deepPurple)),
-                      focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.deepPurple)),
-                      labelText: 'Peso (kg)',
-                      labelStyle:
-                          TextStyle(color: Colors.deepPurple, fontSize: 20),
-                      prefixIcon: Icon(
-                        Icons.balance,
-                        color: Colors.deepPurple,
-                      )),
-                ),
-              ),
-            ),
-            SizedBox(
-              width: double.infinity,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-                child: TextField(
-                  keyboardType:
-                      TextInputType.number, // Define o teclado numérico
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter
-                        .digitsOnly, // Permite apenas dígitos (números)
-                  ],
-                  style:
-                      const TextStyle(color: Colors.deepPurple, fontSize: 30),
-                  decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(vertical: 10),
-                      enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.deepPurple)),
-                      focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.deepPurple)),
-                      labelText: 'Altura (cm)',
-                      labelStyle:
-                          TextStyle(color: Colors.deepPurple, fontSize: 20),
-                      prefixIcon: Icon(
-                        Icons.height,
-                        color: Colors.deepPurple,
-                      )),
-                ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // Implementar o cálculo do IMC aqui
-              },
-              child: const Text('Calcular'),
-            ),
-          ],
-        ),
-      ),
+      body: PageView(
+          controller: pageController,
+          onPageChanged: (value) {
+            setState(() {
+              pagePosition = value;
+            });
+          },
+          children: const [Calculator()]),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        onTap: (value) {
+          pageController.jumpToPage(value);
+        },
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.calculate),
             label: 'Calculadora IMC',
