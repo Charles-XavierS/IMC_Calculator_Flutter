@@ -125,10 +125,36 @@ class _CalculatorState extends State<Calculator> {
         ElevatedButton(
           onPressed: () {
             double imc = imcCalculator.calcularIMC(weight, height / 100.0);
-            print(imc.toStringAsFixed(2));
+            var imcFinal = imc.toStringAsFixed(2);
             setState(() {
               imcResult = imc;
             });
+            showDialog(
+                context: context,
+                builder: (BuildContext bc) {
+                  return AlertDialog(
+                    title: const Text('Add task'),
+                    content: Text(imcFinal),
+                    actions: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text("Cancelar")),
+                          TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                setState(() {});
+                              },
+                              child: const Text("Salvar")),
+                        ],
+                      ),
+                    ],
+                  );
+                });
           },
           child: const Text(
             'Calcular',
