@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'home_page.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -8,7 +10,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  var emailController = TextEditingController(text: "");
+  var nameController = TextEditingController(text: "");
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
                   height: 50,
                   alignment: Alignment.center,
                   child: TextField(
-                    controller: emailController,
+                    controller: nameController,
                     onChanged: (value) {},
                     style: const TextStyle(color: Colors.deepPurple),
                     decoration: const InputDecoration(
@@ -82,7 +84,20 @@ class _LoginPageState extends State<LoginPage> {
                   child: SizedBox(
                     width: double.infinity,
                     child: TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        if (nameController.text.trim().length >= 3) {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HomePage(
+                                        name: nameController.text,
+                                      )));
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text("Por favor, digite seu nome")));
+                        }
+                      },
                       style: ButtonStyle(
                           shape: MaterialStateProperty.all(
                               RoundedRectangleBorder(
