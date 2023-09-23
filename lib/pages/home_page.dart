@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:imc_flutter/pages/calculator_page.dart';
+import 'package:imc_flutter/pages/list_page.dart';
 
 class HomePage extends StatefulWidget {
   final String name;
@@ -39,11 +40,12 @@ class _HomePageState extends State<HomePage> {
               pagePosition = value;
             });
           },
-          children: const [Calculator()]),
+          children: const [Calculator(), ListPage()]),
       bottomNavigationBar: BottomNavigationBar(
         onTap: (value) {
           pageController.jumpToPage(value);
         },
+        currentIndex: pagePosition,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.calculate),
