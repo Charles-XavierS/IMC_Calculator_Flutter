@@ -1,28 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart'; // Importe o pacote Provider
+import '../models/imc_model.dart';
+import '../provider/imc_provider.dart';
+import '../repositories/imc_repository.dart';
+import '../shared/imc_calculations.dart';
 
 class Calculator extends StatefulWidget {
-  const Calculator({super.key});
+  const Calculator({
+    super.key,
+  });
 
   @override
   State<Calculator> createState() => _CalculatorState();
 }
 
-class IMC {
-  double calcularIMC(double peso, double altura) {
-    double imc = peso / (altura * altura);
-    return imc;
-  }
-}
-
 class _CalculatorState extends State<Calculator> {
+  var imcRepository = IMCRepository();
   double weight = 60.0;
-  double height = 160.0;
-  final imcCalculator = IMC();
-
-  double imcResult = 0.0;
+  double height = 1.60;
 
   @override
   Widget build(BuildContext context) {
+    var imcResultsProvider =
+        Provider.of<IMCResultsProvider>(context); // Obtenha o provider
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -98,7 +99,7 @@ class _CalculatorState extends State<Calculator> {
                 SizedBox(
                   width: 100,
                   child: Text(
-                    '${height.toStringAsFixed(2)} cm',
+                    '${height.toStringAsFixed(2)} m',
                     style: const TextStyle(
                       color: Colors.deepPurple,
                       fontSize: 20,
@@ -111,8 +112,8 @@ class _CalculatorState extends State<Calculator> {
             ),
             Slider(
               value: height,
-              min: 60.0,
-              max: 250.0,
+              min: 0.60,
+              max: 2.50,
               onChanged: (value) {
                 setState(() {
                   height = value;
@@ -123,41 +124,82 @@ class _CalculatorState extends State<Calculator> {
         ),
         const SizedBox(height: 30),
         ElevatedButton(
-          onPressed: () {
-            double imc = imcCalculator.calcularIMC(weight, height / 100.0);
-            var imcFinal = imc.toStringAsFixed(2);
-            setState(() {
-              imcResult = imc;
-            });
+          onPressed: () async {
+            var imc = IMC().calcularIMC(weight, height);
+            var imcFinal = IMC().interpretarIMC(imc);
+            var imcResult = IMCResult(imcFinal);
             showDialog(
-                context: context,
-                builder: (BuildContext bc) {
-                  return AlertDialog(
-                    title: const Text('Add task'),
-                    content: Text(imcFinal),
-                    actions: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: const Text("Cancelar")),
-                          TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                                setState(() {});
-                              },
-                              child: const Text("Salvar")),
-                        ],
-                      ),
-                    ],
-                  );
-                });
+              context: context,
+              builder: (BuildContext bc) {
+                return AlertDialog(
+                  title: const Text(
+                    'Resultado',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  content: Text(
+                    imcFinal,
+                    style: const TextStyle(
+                      color: Colors.deepPurple,
+                      fontSize: 25,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  actions: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Container(
+                          height: 40,
+                          width: 100,
+                          decoration: BoxDecoration(
+                            color: Colors.deepPurple,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text(
+                              "Cancelar",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 15),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          height: 40,
+                          width: 100,
+                          decoration: BoxDecoration(
+                            color: Colors.deepPurple,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: TextButton(
+                            onPressed: () async {
+                              imcResultsProvider.addResult(
+                                  imcResult); // Adicione o resultado usando o provider
+                              Navigator.pop(context);
+                            },
+                            child: const Text(
+                              "Salvar",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 15),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    )
+                  ],
+                );
+              },
+            );
           },
           child: const Text(
             'Calcular',
+            style: TextStyle(fontSize: 18),
           ),
         ),
       ],
