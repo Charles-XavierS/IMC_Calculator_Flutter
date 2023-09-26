@@ -21,16 +21,91 @@ class ListPage extends StatelessWidget {
                       var listResults = imcResultsProvider.imcResults[index];
                       return Dismissible(
                         key: Key(listResults.id),
+                        confirmDismiss: (DismissDirection direction) async {
+                          return await showDialog(
+                            context: context,
+                            builder: (BuildContext bc) {
+                              return AlertDialog(
+                                title: const Text(
+                                  'Excluir resultado?',
+                                  style: TextStyle(fontWeight: FontWeight.w700),
+                                ),
+                                content: const Text(
+                                  'Essa ação é permanente e não pode ser desfeita',
+                                  style: TextStyle(
+                                    color: Colors.deepPurple,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  textAlign: TextAlign.justify,
+                                ),
+                                actions: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Container(
+                                        height: 40,
+                                        width: 100,
+                                        decoration: BoxDecoration(
+                                          color: Colors.deepPurple,
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                        child: TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context, false);
+                                          },
+                                          child: const Text(
+                                            "Cancelar",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 15),
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        height: 40,
+                                        width: 100,
+                                        decoration: BoxDecoration(
+                                          color: Colors.deepPurple,
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                        child: TextButton(
+                                          onPressed: () {
+                                            imcResultsProvider
+                                                .removeResult(listResults.id);
+                                            Navigator.pop(context, true);
+                                          },
+                                          child: const Text(
+                                            "Excluir",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 15),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  )
+                                ],
+                              );
+                            },
+                          );
+                        },
                         onDismissed: (DismissDirection direction) {
-                          // Remova o resultado da lista usando o IMCResultsProvider
-                          imcResultsProvider.removeResult(listResults.id);
+                          if (direction == DismissDirection.endToStart) {
+                            imcResultsProvider.removeResult(listResults.id);
+                          }
                         },
                         background: Container(
                           color: Colors.red[900],
                           alignment: Alignment.centerLeft,
                           child: const Padding(
-                            padding: EdgeInsets.only(
-                                left: 16.0), // Adicionando um espaço
+                            padding: EdgeInsets.only(left: 16.0),
                             child: Icon(
                               Icons.delete_forever,
                               color: Colors.white,
@@ -42,8 +117,7 @@ class ListPage extends StatelessWidget {
                           color: Colors.red[900],
                           alignment: Alignment.centerRight,
                           child: const Padding(
-                            padding: EdgeInsets.only(
-                                right: 16.0), // Adicionando um espaço
+                            padding: EdgeInsets.only(right: 16.0),
                             child: Icon(
                               Icons.delete_forever,
                               color: Colors.white,
