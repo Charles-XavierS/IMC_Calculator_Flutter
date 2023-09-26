@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Importe o pacote Provider
+import 'package:provider/provider.dart';
 import '../models/imc_model.dart';
 import '../provider/imc_provider.dart';
 import '../repositories/imc_repository.dart';
@@ -22,7 +22,7 @@ class _CalculatorState extends State<Calculator> {
   @override
   Widget build(BuildContext context) {
     var imcResultsProvider =
-        Provider.of<IMCResultsProvider>(context); // Obtenha o provider
+        Provider.of<IMCResultsProvider>(context);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -31,31 +31,38 @@ class _CalculatorState extends State<Calculator> {
           children: [
             Row(
               mainAxisAlignment:
-                  MainAxisAlignment.center, // Centralize horizontalmente
+                  MainAxisAlignment.spaceEvenly,
               children: [
                 Expanded(child: Container()),
-                const Icon(
-                  Icons.balance,
-                  color: Colors.deepPurple,
-                ),
-                const SizedBox(width: 10),
-                const Text(
-                  'Peso',
-                  style: TextStyle(
-                    color: Colors.deepPurple,
-                    fontSize: 25,
-                  ),
+                const Row(
+                  children: [
+                    Icon(
+                      Icons.balance,
+                      color: Colors.deepPurple,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      'Peso',
+                      style: TextStyle(
+                        color: Colors.deepPurple,
+                        fontSize: 25,
+                      ),
+                    ),
+                  ],
                 ),
                 Expanded(child: Container()),
-                const SizedBox(width: 10),
-                SizedBox(
-                  width: 90,
-                  child: Text(
-                    '${weight.toStringAsFixed(2)} kg',
-                    style: const TextStyle(
-                      color: Colors.deepPurple,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
+                Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.fitWidth,
+                    child: Text(
+                      '${weight.toStringAsFixed(2)} kg',
+                      style: const TextStyle(
+                        color: Colors.deepPurple,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ),
@@ -79,7 +86,7 @@ class _CalculatorState extends State<Calculator> {
           children: [
             Row(
               mainAxisAlignment:
-                  MainAxisAlignment.center, // Centralize horizontalmente
+                  MainAxisAlignment.center,
               children: [
                 Expanded(child: Container()),
                 const Icon(
@@ -177,7 +184,7 @@ class _CalculatorState extends State<Calculator> {
                           child: TextButton(
                             onPressed: () async {
                               imcResultsProvider.addResult(
-                                  imcResult); // Adicione o resultado usando o provider
+                                  imcResult);
                               Navigator.pop(context);
                             },
                             child: const Text(
