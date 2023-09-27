@@ -1,37 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../models/imc_model.dart';
-import '../provider/imc_provider.dart';
-import '../repositories/imc_repository.dart';
+import '../models/imc_sqlite_model.dart';
+import '../repositories/sqlite/imc_sqlite_repository.dart';
 import '../shared/imc_calculations.dart';
 
 class Calculator extends StatefulWidget {
-  const Calculator({
-    super.key,
-  });
+  const Calculator({super.key});
 
   @override
   State<Calculator> createState() => _CalculatorState();
 }
 
 class _CalculatorState extends State<Calculator> {
-  var imcRepository = IMCRepository();
+  var imcRepository = IMCSqliteRepository();
   double weight = 60.0;
   double height = 1.60;
 
   @override
   Widget build(BuildContext context) {
-    var imcResultsProvider =
-        Provider.of<IMCResultsProvider>(context);
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Column(
           children: [
             Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Expanded(child: Container()),
                 const Row(
@@ -85,8 +77,7 @@ class _CalculatorState extends State<Calculator> {
         Column(
           children: [
             Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Expanded(child: Container()),
                 const Icon(
@@ -131,10 +122,11 @@ class _CalculatorState extends State<Calculator> {
         ),
         const SizedBox(height: 30),
         ElevatedButton(
-          onPressed: () async {
+          onPressed: () {
             var imc = IMC().calcularIMC(weight, height);
             var imcFinal = IMC().interpretarIMC(imc);
-            var imcResult = IMCResult(imcFinal);
+
+            var imcResult = ImcSqliteModel(0, imcFinal);
             showDialog(
               context: context,
               builder: (BuildContext bc) {
@@ -183,8 +175,7 @@ class _CalculatorState extends State<Calculator> {
                           ),
                           child: TextButton(
                             onPressed: () async {
-                              imcResultsProvider.addResult(
-                                  imcResult);
+                              await imcRepository.save(imcResult);
                               Navigator.pop(context);
                             },
                             child: const Text(
