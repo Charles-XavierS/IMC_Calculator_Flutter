@@ -3,7 +3,7 @@ class ImcSqliteModel {
 
   String _imc = '';
 
-  ImcSqliteModel(this._imc);
+  ImcSqliteModel(this._id, this._imc);
 
   int get id => _id;
 
