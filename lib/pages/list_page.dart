@@ -1,26 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../provider/imc_provider.dart';
+import '../models/imc_sqlite_model.dart';
+import '../repositories/sqlite/imc_sqlite_repository.dart'; // Importe o repositório SQLite
 
-class ListPage extends StatelessWidget {
+class ListPage extends StatefulWidget {
   const ListPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    var imcResultsProvider = Provider.of<IMCResultsProvider>(context);
+  State<ListPage> createState() => _ListPageState();
+}
 
+class _ListPageState extends State<ListPage> {
+  var imcSqliteRepository = IMCSqliteRepository();
+  List<ImcSqliteModel> imcResults = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadResults();
+  }
+
+  Future<void> loadResults() async {
+    var results = await imcSqliteRepository.getDataBase();
+    setState(() {
+      imcResults = results;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Resultados")),
       body: Column(
         children: [
           Expanded(
-            child: imcResultsProvider.imcResults.isNotEmpty
+            child: imcResults.isNotEmpty
                 ? ListView.builder(
-                    itemCount: imcResultsProvider.imcResults.length,
+                    itemCount: imcResults.length,
                     itemBuilder: (BuildContext bc, int index) {
-                      var listResults = imcResultsProvider.imcResults[index];
+                      var listResult = imcResults[index];
                       return Dismissible(
-                        key: Key(listResults.id),
+                        key: Key(listResult.id.toString()),
                         confirmDismiss: (DismissDirection direction) async {
                           return await showDialog(
                             context: context,
@@ -74,8 +93,8 @@ class ListPage extends StatelessWidget {
                                         ),
                                         child: TextButton(
                                           onPressed: () {
-                                            imcResultsProvider
-                                                .removeResult(listResults.id);
+                                            imcSqliteRepository
+                                                .delete(listResult.id);
                                             Navigator.pop(context, true);
                                           },
                                           child: const Text(
@@ -98,7 +117,7 @@ class ListPage extends StatelessWidget {
                         },
                         onDismissed: (DismissDirection direction) {
                           if (direction == DismissDirection.endToStart) {
-                            imcResultsProvider.removeResult(listResults.id);
+                            imcSqliteRepository.delete(listResult.id);
                           }
                         },
                         background: Container(
@@ -127,7 +146,7 @@ class ListPage extends StatelessWidget {
                         ),
                         child: ListTile(
                           title: Text(
-                            listResults.getImc(),
+                            imcResults[index].imc,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: Colors.deepPurple,
